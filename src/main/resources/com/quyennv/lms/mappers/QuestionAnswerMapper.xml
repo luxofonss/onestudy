@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quyennv.lms.mappers.QuestionAnswerMapper">
+  <resultMap id="BaseResultMap" type="com.quyennv.lms.entities.QuestionAnswer">
+    <id column="id" jdbcType="OTHER" javaType="UUID" typeHandler="com.quyennv.lms.config.typehandlers.UUIDTypeHandler"  property="id" />
+    <result column="user_id" jdbcType="OTHER" javaType="UUID" typeHandler="com.quyennv.lms.config.typehandlers.UUIDTypeHandler"  property="userId" />
+    <result column="question_id" jdbcType="OTHER" javaType="UUID" typeHandler="com.quyennv.lms.config.typehandlers.UUIDTypeHandler"  property="questionId" />
+    <result column="assignment_attempt_id" jdbcType="OTHER" javaType="UUID" typeHandler="com.quyennv.lms.config.typehandlers.UUIDTypeHandler"  property="assignmentAttemptId" />
+    <result column="selected_option_id" jdbcType="OTHER" javaType="UUID" typeHandler="com.quyennv.lms.config.typehandlers.UUIDTypeHandler"  property="selectedOptionId" />
+    <result column="text_answer" jdbcType="VARCHAR" property="textAnswer" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="deleted_at" jdbcType="TIMESTAMP" property="deletedAt" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, user_id, question_id, assignment_attempt_id, selected_option_id, text_answer, 
+    score, deleted_at, created_at, updated_at
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="UUID" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from public.question_answer
+    where id = #{id,jdbcType=OTHER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="UUID">
+    delete from public.question_answer
+    where id = #{id,jdbcType=OTHER}
+  </delete>
+  <insert id="insert" parameterType="com.quyennv.lms.entities.QuestionAnswer">
+    insert into public.question_answer (id, user_id, question_id, 
+      assignment_attempt_id, selected_option_id, text_answer, 
+      score, deleted_at)
+    values (#{id,jdbcType=OTHER}, #{userId,jdbcType=OTHER}, #{questionId,jdbcType=OTHER}, 
+      #{assignmentAttemptId,jdbcType=OTHER}, #{selectedOptionId,jdbcType=OTHER}, #{textAnswer,jdbcType=VARCHAR}, 
+      #{score,jdbcType=INTEGER}, #{deletedAt,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.quyennv.lms.entities.QuestionAnswer">
+    insert into public.question_answer
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="questionId != null">
+        question_id,
+      </if>
+      <if test="assignmentAttemptId != null">
+        assignment_attempt_id,
+      </if>
+      <if test="selectedOptionId != null">
+        selected_option_id,
+      </if>
+      <if test="textAnswer != null">
+        text_answer,
+      </if>
+      <if test="score != null">
+        score,
+      </if>
+      <if test="deletedAt != null">
+        deleted_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=OTHER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=OTHER},
+      </if>
+      <if test="questionId != null">
+        #{questionId,jdbcType=OTHER},
+      </if>
+      <if test="assignmentAttemptId != null">
+        #{assignmentAttemptId,jdbcType=OTHER},
+      </if>
+      <if test="selectedOptionId != null">
+        #{selectedOptionId,jdbcType=OTHER},
+      </if>
+      <if test="textAnswer != null">
+        #{textAnswer,jdbcType=VARCHAR},
+      </if>
+      <if test="score != null">
+        #{score,jdbcType=INTEGER},
+      </if>
+      <if test="deletedAt != null">
+        #{deletedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.quyennv.lms.entities.QuestionAnswer">
+    update public.question_answer
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=OTHER},
+      </if>
+      <if test="questionId != null">
+        question_id = #{questionId,jdbcType=OTHER},
+      </if>
+      <if test="assignmentAttemptId != null">
+        assignment_attempt_id = #{assignmentAttemptId,jdbcType=OTHER},
+      </if>
+      <if test="selectedOptionId != null">
+        selected_option_id = #{selectedOptionId,jdbcType=OTHER},
+      </if>
+      <if test="textAnswer != null">
+        text_answer = #{textAnswer,jdbcType=VARCHAR},
+      </if>
+      <if test="score != null">
+        score = #{score,jdbcType=INTEGER},
+      </if>
+      <if test="deletedAt != null">
+        deleted_at = #{deletedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=OTHER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.quyennv.lms.entities.QuestionAnswer">
+    update public.question_answer
+    set user_id = #{userId,jdbcType=OTHER},
+      question_id = #{questionId,jdbcType=OTHER},
+      assignment_attempt_id = #{assignmentAttemptId,jdbcType=OTHER},
+      selected_option_id = #{selectedOptionId,jdbcType=OTHER},
+      text_answer = #{textAnswer,jdbcType=VARCHAR},
+      score = #{score,jdbcType=INTEGER},
+      deleted_at = #{deletedAt,jdbcType=TIMESTAMP},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=OTHER}
+  </update>
+</mapper>

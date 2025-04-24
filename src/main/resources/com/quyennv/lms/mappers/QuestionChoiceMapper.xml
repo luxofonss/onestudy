@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quyennv.lms.mappers.QuestionChoiceMapper">
+  <resultMap id="BaseResultMap" type="com.quyennv.lms.entities.QuestionChoice">
+    <id column="id" jdbcType="OTHER" javaType="UUID" typeHandler="com.quyennv.lms.config.typehandlers.UUIDTypeHandler"  property="id" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="order" jdbcType="INTEGER" property="order" />
+    <result column="is_correct" jdbcType="BIT" property="isCorrect" />
+    <result column="question_id" jdbcType="OTHER" javaType="UUID" typeHandler="com.quyennv.lms.config.typehandlers.UUIDTypeHandler"  property="questionId" />
+    <result column="deleted_at" jdbcType="TIMESTAMP" property="deletedAt" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, content, "order", is_correct, question_id, deleted_at, created_at, updated_at
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="UUID" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from public.question_choice
+    where id = #{id,jdbcType=OTHER}
+  </select>
+  <select id="selectByQuestionId" parameterType="UUID" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from public.question_choice
+    where question_id = #{questionId,jdbcType=OTHER}
+  </select>
+  <select id="selectByQuestionIds" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from public.question_choice
+    where question_id in
+      (<foreach collection="list" item="item" separator=",">
+        #{item,jdbcType=OTHER}
+      </foreach>)
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="UUID">
+    delete from public.question_choice
+    where id = #{id,jdbcType=OTHER}
+  </delete>
+  <insert id="insert" parameterType="com.quyennv.lms.entities.QuestionChoice">
+    insert into public.question_choice (content, "order",
+      is_correct, question_id, deleted_at)
+    values (#{content,jdbcType=VARCHAR}, #{order,jdbcType=INTEGER},
+      #{isCorrect,jdbcType=BIT}, #{questionId,jdbcType=OTHER}, #{deletedAt,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertBatch" parameterType="list">
+    insert into public.question_choice (content, "order",
+      is_correct, question_id, deleted_at)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.content,jdbcType=VARCHAR}, #{item.order,jdbcType=INTEGER},
+      #{item.isCorrect,jdbcType=BIT}, #{item.questionId,jdbcType=OTHER}, #{item.deletedAt,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+  <insert id="insertSelective" parameterType="com.quyennv.lms.entities.QuestionChoice">
+    insert into public.question_choice
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="order != null">
+        order,
+      </if>
+      <if test="isCorrect != null">
+        is_correct,
+      </if>
+      <if test="questionId != null">
+        question_id,
+      </if>
+      <if test="deletedAt != null">
+        deleted_at,
+      </if>
+      <if test="createdAt != null">
+        created_at,
+      </if>
+      <if test="updatedAt != null">
+        updated_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=OTHER},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="order != null">
+        #{order,jdbcType=INTEGER},
+      </if>
+      <if test="isCorrect != null">
+        #{isCorrect,jdbcType=BIT},
+      </if>
+      <if test="questionId != null">
+        #{questionId,jdbcType=OTHER},
+      </if>
+      <if test="deletedAt != null">
+        #{deletedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdAt != null">
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.quyennv.lms.entities.QuestionChoice">
+    update public.question_choice
+    <set>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="order != null">
+       "order"= #{order,jdbcType=INTEGER},
+      </if>
+      <if test="isCorrect != null">
+        is_correct = #{isCorrect,jdbcType=BIT},
+      </if>
+      <if test="questionId != null">
+        question_id = #{questionId,jdbcType=OTHER},
+      </if>
+      <if test="deletedAt != null">
+        deleted_at = #{deletedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=OTHER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.quyennv.lms.entities.QuestionChoice">
+    update public.question_choice
+    set content = #{content,jdbcType=VARCHAR},
+     "order"= #{order,jdbcType=INTEGER},
+      is_correct = #{isCorrect,jdbcType=BIT},
+      question_id = #{questionId,jdbcType=OTHER},
+      deleted_at = #{deletedAt,jdbcType=TIMESTAMP},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=OTHER}
+  </update>
+</mapper>

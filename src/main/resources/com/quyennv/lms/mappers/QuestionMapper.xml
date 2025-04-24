@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quyennv.lms.mappers.QuestionMapper">
+    <resultMap id="BaseResultMap" type="com.quyennv.lms.entities.Question">
+        <id column="id" jdbcType="OTHER" property="id" javaType="UUID" typeHandler="com.quyennv.lms.config.typehandlers.UUIDTypeHandler"/>
+        <result column="question_id" jdbcType="OTHER" property="questionId" />
+        <result column="assignment_id" jdbcType="OTHER" property="assignmentId" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+        <result column="image_resource_id" jdbcType="OTHER" property="imageResourceId" />
+        <result column="audio_resource_id" jdbcType="OTHER" property="audioResourceId" />
+        <result column="audio_max_play_time" jdbcType="INTEGER" property="audioMaxPlayTime" />
+        <result column="point" jdbcType="INTEGER" property="point" />
+        <result column="type" jdbcType="VARCHAR" property="type" />
+        <result column="level" jdbcType="VARCHAR" property="level" />
+        <result column="answer_explain" jdbcType="VARCHAR" property="answerExplain" />
+        <result column="teacher_id" jdbcType="OTHER" property="teacherId" />
+        <result column="subject_id" jdbcType="OTHER" property="subjectId" />
+        <result column="deleted_at" jdbcType="TIMESTAMP" property="deletedAt" />
+        <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+        <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+        id, question_id, assignment_id, title, image_resource_id, audio_resource_id, audio_max_play_time,
+    point, type, level, answer_explain, teacher_id, subject_id, deleted_at, created_at, updated_at
+    </sql>
+    <select id="selectByAssignmentId" parameterType="UUID" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from public.question
+        where assignment_id = #{assignmentId,jdbcType=OTHER}
+    </select>
+    <select id="selectByPrimaryKey" parameterType="UUID" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from public.question
+        where id = #{id,jdbcType=OTHER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="UUID">
+        delete from public.question
+        where id = #{id,jdbcType=OTHER}
+    </delete>
+    <insert id="insert" parameterType="com.quyennv.lms.entities.Question">
+        insert into public.question (id, question_id, assignment_id,
+                                     title, image_resource_id, audio_resource_id,
+                                     audio_max_play_time, point, type,
+                                     level, answer_explain, teacher_id,
+                                     subject_id, deleted_at, created_at,
+                                     updated_at)
+        values (#{id,jdbcType=OTHER}, #{questionId,jdbcType=OTHER}, #{assignmentId,jdbcType=OTHER},
+                #{title,jdbcType=VARCHAR}, #{imageResourceId,jdbcType=OTHER}, #{audioResourceId,jdbcType=VARCHAR},
+                #{audioMaxPlayTime,jdbcType=INTEGER}, #{point,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR},
+                #{level,jdbcType=VARCHAR}, #{answerExplain,jdbcType=VARCHAR}, #{teacherId,jdbcType=OTHER},
+                #{subjectId,jdbcType=OTHER}, #{deletedAt,jdbcType=TIMESTAMP}, #{createdAt,jdbcType=TIMESTAMP},
+                #{updatedAt,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="com.quyennv.lms.entities.Question">
+        insert into public.question
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="questionId != null">
+                question_id,
+            </if>
+            <if test="assignmentId != null">
+                assignment_id,
+            </if>
+            <if test="title != null">
+                title,
+            </if>
+            <if test="imageResourceId != null">
+                image_resource_id,
+            </if>
+            <if test="audioResourceId != null">
+                audio_resource_id,
+            </if>
+            <if test="audioMaxPlayTime != null">
+                audio_max_play_time,
+            </if>
+            <if test="point != null">
+                point,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="level != null">
+                level,
+            </if>
+            <if test="answerExplain != null">
+                answer_explain,
+            </if>
+            <if test="teacherId != null">
+                teacher_id,
+            </if>
+            <if test="subjectId != null">
+                subject_id,
+            </if>
+            <if test="deletedAt != null">
+                deleted_at,
+            </if>
+            <if test="createdAt != null">
+                created_at,
+            </if>
+            <if test="updatedAt != null">
+                updated_at,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=OTHER},
+            </if>
+            <if test="questionId != null">
+                #{questionId,jdbcType=OTHER},
+            </if>
+            <if test="assignmentId != null">
+                #{assignmentId,jdbcType=OTHER},
+            </if>
+            <if test="title != null">
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="imageResourceId != null">
+                #{imageResourceId,jdbcType=OTHER},
+            </if>
+            <if test="audioResourceId != null">
+                #{audioResourceId,jdbcType=VARCHAR},
+            </if>
+            <if test="audioMaxPlayTime != null">
+                #{audioMaxPlayTime,jdbcType=INTEGER},
+            </if>
+            <if test="point != null">
+                #{point,jdbcType=INTEGER},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="level != null">
+                #{level,jdbcType=VARCHAR},
+            </if>
+            <if test="answerExplain != null">
+                #{answerExplain,jdbcType=VARCHAR},
+            </if>
+            <if test="teacherId != null">
+                #{teacherId,jdbcType=OTHER},
+            </if>
+            <if test="subjectId != null">
+                #{subjectId,jdbcType=OTHER},
+            </if>
+            <if test="deletedAt != null">
+                #{deletedAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createdAt != null">
+                #{createdAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatedAt != null">
+                #{updatedAt,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.quyennv.lms.entities.Question">
+        update public.question
+        <set>
+            <if test="questionId != null">
+                question_id = #{questionId,jdbcType=OTHER},
+            </if>
+            <if test="assignmentId != null">
+                assignment_id = #{assignmentId,jdbcType=OTHER},
+            </if>
+            <if test="title != null">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="imageResourceId != null">
+                image_resource_id = #{imageResourceId,jdbcType=OTHER},
+            </if>
+            <if test="audioResourceId != null">
+                audio_resource_id = #{audioResourceId,jdbcType=VARCHAR},
+            </if>
+            <if test="audioMaxPlayTime != null">
+                audio_max_play_time = #{audioMaxPlayTime,jdbcType=INTEGER},
+            </if>
+            <if test="point != null">
+                point = #{point,jdbcType=INTEGER},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="level != null">
+                level = #{level,jdbcType=VARCHAR},
+            </if>
+            <if test="answerExplain != null">
+                answer_explain = #{answerExplain,jdbcType=VARCHAR},
+            </if>
+            <if test="teacherId != null">
+                teacher_id = #{teacherId,jdbcType=OTHER},
+            </if>
+            <if test="subjectId != null">
+                subject_id = #{subjectId,jdbcType=OTHER},
+            </if>
+            <if test="deletedAt != null">
+                deleted_at = #{deletedAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createdAt != null">
+                created_at = #{createdAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatedAt != null">
+                updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=OTHER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.quyennv.lms.entities.Question">
+        update public.question
+        set question_id = #{questionId,jdbcType=OTHER},
+            assignment_id = #{assignmentId,jdbcType=OTHER},
+            title = #{title,jdbcType=VARCHAR},
+            image_resource_id = #{imageResourceId,jdbcType=OTHER},
+            audio_resource_id = #{audioResourceId,jdbcType=VARCHAR},
+            audio_max_play_time = #{audioMaxPlayTime,jdbcType=INTEGER},
+            point = #{point,jdbcType=INTEGER},
+            type = #{type,jdbcType=VARCHAR},
+            level = #{level,jdbcType=VARCHAR},
+            answer_explain = #{answerExplain,jdbcType=VARCHAR},
+            teacher_id = #{teacherId,jdbcType=OTHER},
+            subject_id = #{subjectId,jdbcType=OTHER},
+            deleted_at = #{deletedAt,jdbcType=TIMESTAMP},
+            created_at = #{createdAt,jdbcType=TIMESTAMP},
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=OTHER}
+    </update>
+    <delete id="deleteByAssignmentId" parameterType="UUID">
+        delete from public.question
+        where assignment_id = #{assignmentId,jdbcType=OTHER}
+    </delete>
+</mapper>
