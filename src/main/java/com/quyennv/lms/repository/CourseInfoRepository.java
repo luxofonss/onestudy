@@ -7,9 +7,9 @@ import java.util.UUID;
 
 public interface CourseInfoRepository {
 
-    List<CourseInfo> findByCourseId(String courseId);
+    List<CourseInfo> findByCourseId(UUID courseId);
 
-    void deleteNotInIds(List<UUID> ids);
+    void deleteNotInIds(List<UUID> ids, UUID courseId);
 
     void insertBatch(List<CourseInfo> courseInfos);
 

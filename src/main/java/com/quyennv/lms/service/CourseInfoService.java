@@ -9,6 +9,6 @@ public interface CourseInfoService {
 
     void updateListByCourseId(UUID courseId, List<CourseInfo> courseInfos);
 
-    List<CourseInfo> getByCourseId(String courseId);
+    List<CourseInfo> getByCourseId(UUID courseId);
 
 }

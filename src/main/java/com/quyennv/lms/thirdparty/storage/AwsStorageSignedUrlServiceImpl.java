@@ -22,13 +22,13 @@ import java.util.Objects;
 
 @Component
 @Slf4j
-public class AwsStorageServiceImpl extends StorageService {
+public class AwsStorageSignedUrlServiceImpl extends StorageService {
     private final AmazonS3 amazonS3;
 
     @Value("${aws.s3.bucket.name}")
     private String bucketName;
 
-    @Value("${aws.s3.bucket.domain}")
+    @Value("${aws.cloudfront.domain}")
     private String domain;
 
     @Value("${aws.cloudfront.key-pair-id}")
@@ -36,14 +36,34 @@ public class AwsStorageServiceImpl extends StorageService {
 
     private static final String cloudflarePrivateKeyPath = "cloudfront/private-key.pem";
 
-    public AwsStorageServiceImpl(AmazonS3 amazonS3) {
+    public AwsStorageSignedUrlServiceImpl(AmazonS3 amazonS3) {
         this.amazonS3 = amazonS3;
     }
-
     @Override
     public String getFileUrl(String fileName) {
-        return String.format("%s/%s", domain, fileName);
+        CloudFrontUtilities cloudFrontUtilities = CloudFrontUtilities.create();
+        Instant expiration = Instant.now().plusSeconds(Constant.SIGNED_URL_EXPIRATION);
+        String resourcePath = String.format("%s/%s", domain, fileName);
+
+        try {
+            File privateKeyFile = new ClassPathResource(cloudflarePrivateKeyPath).getFile();
+            CannedSignerRequest cannedRequest = CannedSignerRequest.builder()
+                    .resourceUrl(resourcePath)
+                    .privateKey(privateKeyFile.getAbsoluteFile().toPath())
+                    .expirationDate(expiration)
+                    .keyPairId(keyPairId)
+                    .build();
+
+            SignedUrl signedUrl = cloudFrontUtilities.getSignedUrlWithCannedPolicy(cannedRequest);
+            return signedUrl.url();
+        } catch (IOException exception) {
+            log.error("Error while getting private key file: {}", exception.getMessage());
+            throw new RuntimeException("Error while getting private key file");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
+
 
     public String uploadFile(MultipartFile file) {
         try {
@@ -52,7 +72,7 @@ public class AwsStorageServiceImpl extends StorageService {
                     + Objects.requireNonNull(file.getContentType()).split("/")[1];
             amazonS3.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
             if (fileObj.delete()) {
-                return getFileUrl(fileName);
+                return fileName;
             } else {
                 throw new RuntimeException("Error while deleting file");
             }
@@ -64,7 +84,7 @@ public class AwsStorageServiceImpl extends StorageService {
 
     @Override
     public String getProviderName() {
-        return Constant.STORAGE_AWS;
+        return "AWS_S3";
     }
 
 

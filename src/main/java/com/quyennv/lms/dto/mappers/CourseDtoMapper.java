@@ -17,10 +17,12 @@ public interface CourseDtoMapper {
 
     @Mapping(source = "startDate", target = "startDate", dateFormat = "yyyy-MM-dd")
     @Mapping(source = "endDate", target = "endDate", dateFormat = "yyyy-MM-dd")
+    @Mapping(source = "backgroundImage", target = "backgroundImg")
     Course toCourse(CreateCourseRequest request);
 
     @Mapping(source = "startDate", target = "startDate", dateFormat = "yyyy-MM-dd")
     @Mapping(source = "endDate", target = "endDate", dateFormat = "yyyy-MM-dd")
+    @Mapping(source = "backgroundImage", target = "backgroundImg")
     Course updateRequestToCourse(UpdateCourseRequest request);
 
     CreateCourseResponse toCreateCourseResponse(Course course);

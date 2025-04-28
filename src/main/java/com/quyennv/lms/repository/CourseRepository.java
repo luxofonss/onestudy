@@ -13,7 +13,7 @@ public interface CourseRepository {
 
     int persist(Course course);
 
-    Optional<Course> findById(String id);
+    Optional<Course> findById(UUID id);
 
     Optional<Course> findByCode(String code);
 
@@ -26,6 +26,8 @@ public interface CourseRepository {
     );
 
     void updateCourse(Course updatedCourse, UpdateCourseRequest request);
+
+    void updateCourseSelective(Course updatedCourse, UpdateCourseRequest request);
 
     List<Course> findByTeacherId(UUID id);
 

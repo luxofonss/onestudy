@@ -17,39 +17,14 @@ public class QuestionRepositoryImpl implements QuestionRepository {
 
     private final QuestionMapper questionMapper;
 
-    private final QuestionChoiceMapper questionChoiceMapper;
-
-    private final QuestionTextAnswerRepository questionTextAnswerRepository;
-
-    public QuestionRepositoryImpl(QuestionMapper questionMapper,
-                                  QuestionChoiceMapper questionChoiceMapper,
-                                  QuestionTextAnswerRepository questionTextAnswerRepository) {
+    public QuestionRepositoryImpl(QuestionMapper questionMapper) {
         this.questionMapper = questionMapper;
-        this.questionChoiceMapper = questionChoiceMapper;
-        this.questionTextAnswerRepository = questionTextAnswerRepository;
     }
 
     @Override
     public int save(Question record) {
         record.setId(UUID.randomUUID());
         questionMapper.insert(record);
-
-        List<QuestionChoice> questionChoices = record.getChoices();
-        if (questionChoices != null && !questionChoices.isEmpty()) {
-            questionChoices.forEach(choice -> {
-                choice.setQuestionId(record.getId());
-            });
-        }
-        questionChoiceMapper.insertBatch(questionChoices);
-
-        List<QuestionTextAnswer> textAnswers = record.getTextAnswers();
-        if (textAnswers != null && !textAnswers.isEmpty()) {
-            textAnswers.forEach(textAnswer -> {
-                textAnswer.setQuestionId(record.getId());
-            });
-            questionTextAnswerRepository.insertBatch(textAnswers);
-        }
-
         return 1;
     }
 
@@ -61,5 +36,10 @@ public class QuestionRepositoryImpl implements QuestionRepository {
     @Override
     public int update(Question updateData) {
         return questionMapper.updateByPrimaryKey(updateData);
+    }
+
+    @Override
+    public void softDelete(UUID questionId) {
+        questionMapper.softDeleteByPrimaryKey(questionId);
     }
 }

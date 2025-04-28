@@ -25,6 +25,10 @@ public class Lesson {
 
     private UUID sectionId;
 
+    private UUID assignmentId;
+
+    private String videoUrl;
+
     private Date updatedAt;
 
     private Date createdAt;

@@ -86,6 +86,12 @@
     from public.assignment
     where id = #{id,jdbcType=OTHER}
   </select>
+  <select id="selectByLessonId" parameterType="UUID" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from public.assignment
+    where lesson_id = #{lessonId,jdbcType=OTHER} and deleted_at is null
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="UUID">
     delete from public.assignment
     where id = #{id,jdbcType=OTHER}

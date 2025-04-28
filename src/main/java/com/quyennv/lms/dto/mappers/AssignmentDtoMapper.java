@@ -13,6 +13,8 @@ public interface AssignmentDtoMapper {
     @Mapping(source = "endTime", target = "endTime", dateFormat = "yyyy-MM-dd HH:mm:ss")
     Assignment toAssignment(CreateAssignmentRequest request);
 
+    @Mapping(source = "startTime", target = "startTime", dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @Mapping(source = "endTime", target = "endTime", dateFormat = "yyyy-MM-dd HH:mm:ss")
     Assignment toAssignment(UpdateAssignmentRequest request);
 
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/courses")
@@ -42,20 +43,22 @@ public class CourseController {
             @CurrentUser UserPrincipal requester,
             @PathVariable String id,
             @RequestBody @Valid UpdateCourseRequest request) {
-        return baseService.ofSucceeded(courseService.update(id, request, requester));
+        request.setCourseId(UUID.fromString(id));
+        return baseService.ofSucceeded(courseService.update(request, requester));
     }
 
     @GetMapping("/{id}")
+    @LogsActivityAnnotation
     public BaseResponse<Course> getCourseBasic(
             @CurrentUser UserPrincipal requester,
-            @PathVariable String id) {
+            @PathVariable UUID id) {
         return baseService.ofSucceeded(courseService.getCourseBasic(id, requester));
     }
 
     @GetMapping("/{id}/detail")
     public BaseResponse<Course> getCourseDetail(
             @CurrentUser UserPrincipal requester,
-            @PathVariable String id) {
+            @PathVariable UUID id) {
         return baseService.ofSucceeded(courseService.getCourseDetail(id, requester));
     }
 
@@ -82,7 +85,7 @@ public class CourseController {
     @LogsActivityAnnotation
     public BaseResponse<UserEnrollCourse> addStudents(
             @CurrentUser UserPrincipal requester,
-            @PathVariable String id,
+            @PathVariable UUID id,
             @RequestBody @Valid AddStudentToCourseRequest request) {
         courseService.addStudents(id, request, requester);
         return baseService.ofSucceeded(null);
@@ -91,8 +94,8 @@ public class CourseController {
     @PutMapping("/{id}/students/{studentId}")
     public BaseResponse<UserEnrollCourse> updateStudentStatus(
             @CurrentUser UserPrincipal requester,
-            @PathVariable String id,
-            @PathVariable String studentId,
+            @PathVariable UUID id,
+            @PathVariable UUID studentId,
             @RequestBody @Valid UpdateCourseStudent request) {
         return baseService.ofSucceeded(courseService.updateStudentStatus(id, studentId, request, requester));
     }
@@ -100,15 +103,15 @@ public class CourseController {
     @DeleteMapping("/{id}/students/{studentId}")
     public BaseResponse<UserEnrollCourse> removeStudent(
             @CurrentUser UserPrincipal requester,
-            @PathVariable String id,
-            @PathVariable String studentId) {
+            @PathVariable UUID id,
+            @PathVariable UUID studentId) {
         return baseService.ofSucceeded(courseService.removeStudent(id, studentId, requester));
     }
 
     @GetMapping("/{id}/students")
     public BaseResponse<List<UserEnrollCourse>> getStudents(
             @CurrentUser UserPrincipal requester,
-            @PathVariable String id) {
+            @PathVariable UUID id) {
         return baseService.ofSucceeded(courseService.getStudents(id, requester));
     }
 

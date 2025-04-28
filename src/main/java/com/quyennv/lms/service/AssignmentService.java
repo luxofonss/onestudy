@@ -18,4 +18,6 @@ public interface AssignmentService {
     Assignment getAssignment(UUID id, UserPrincipal requester);
 
     Assignment checkAssignmentPermission(UUID assignmentId, UserPrincipal requester);
+
+    Assignment getAssignmentByLesson(UUID uuid, UserPrincipal requester);
 }

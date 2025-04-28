@@ -24,7 +24,7 @@ public interface CourseInfoMapper {
 
     int updateByPrimaryKey(CourseInfo record);
 
-    List<CourseInfo> selectByCourseId(String courseId);
+    List<CourseInfo> selectByCourseId(UUID courseId);
 
-    void deleteCourseIdNotIn(List<UUID> ids);
+    void deleteCourseIdNotIn(List<UUID> ids, UUID courseId);
 }

@@ -15,7 +15,7 @@ public interface QuestionTextAnswerRepository {
 
     int update(QuestionTextAnswer record);
 
-    int delete(String id);
+    int delete(UUID id);
 
     List<QuestionTextAnswer> findByQuestionId(UUID questionId);
 

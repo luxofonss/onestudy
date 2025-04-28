@@ -18,7 +18,44 @@ public class LessonRepositoryImpl implements LessonRepository {
     }
 
     @Override
-    public List<Lesson> findLessonsBySectionId(UUID sectionId) {
+    public int insert(Lesson lesson) {
+        lesson.setId(UUID.randomUUID());
+        return lessonMapper.insert(lesson);
+    }
+
+    @Override
+    public void insertBatch(List<Lesson> lessons) {
+        // todo: handle bath size
+        lessonMapper.insertBatch(lessons);
+    }
+
+    @Override
+    public int insertSelective(Lesson lesson) {
+        return lessonMapper.insertSelective(lesson);
+    }
+
+    @Override
+    public Lesson findByPrimaryKey(UUID id) {
+        return lessonMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public List<Lesson> findBySectionId(UUID sectionId) {
         return lessonMapper.selectBySectionId(sectionId);
+    }
+
+    @Override
+    public int updateByPrimaryKeySelective(Lesson lesson) {
+        return lessonMapper.updateByPrimaryKeySelective(lesson);
+    }
+
+    @Override
+    public int updateByPrimaryKey(Lesson lesson) {
+        return lessonMapper.updateByPrimaryKey(lesson);
+    }
+
+    @Override
+    public int softDeleteByPrimaryKey(UUID id) {
+        return lessonMapper.softDeleteByPrimaryKey(id);
     }
 }

@@ -37,13 +37,16 @@ public class CourseServiceImpl implements CourseService {
 
     private final CourseInfoService courseInfoService;
 
+    private final CourseInfoRepository courseInfoRepository;
+
     public CourseServiceImpl(CourseDtoMapper courseDtoMapper,
                              CourseRepository courseRepository,
                              CourseSectionService sectionService,
                              LessonRepository lessonRepository,
                              UserEnrollCourseRepository userEnrollCourseRepository,
                              UserRepository userRepository,
-                             CourseInfoService courseInfoService) {
+                             CourseInfoService courseInfoService,
+                             CourseInfoRepository courseInfoRepository) {
         this.courseDtoMapper = courseDtoMapper;
         this.courseRepository = courseRepository;
         this.sectionService = sectionService;
@@ -51,6 +54,7 @@ public class CourseServiceImpl implements CourseService {
         this.userEnrollCourseRepository = userEnrollCourseRepository;
         this.userRepository = userRepository;
         this.courseInfoService = courseInfoService;
+        this.courseInfoRepository = courseInfoRepository;
     }
 
     @Override
@@ -60,19 +64,21 @@ public class CourseServiceImpl implements CourseService {
         course.setTeacherId(requester.getId());
         course.setCode(FunctionHelper.generateRandomString(Constant.COURSE_CODE_LENGTH));
 
-        try {
-            courseRepository.persist(course);
-        } catch (Exception e) {
-            log.error("Error while creating course:: {}", e.getMessage());
-            throw new RuntimeException("Error while creating course");
-        }
+        courseRepository.persist(course);
 
+        if (!CollectionUtils.isEmpty(course.getCourseInfos())) {
+            course.getCourseInfos().forEach(courseInfo -> {
+                courseInfo.setCourseId(course.getId());
+                courseInfo.setId(UUID.randomUUID());
+            });
+            courseInfoRepository.insertBatch(course.getCourseInfos());
+        }
         return courseDtoMapper.toCreateCourseResponse(course);
     }
 
     @Override
-    public CreateCourseResponse update(String id, UpdateCourseRequest request, UserPrincipal requester) {
-        Course course = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found"));
+    public CreateCourseResponse update(UpdateCourseRequest request, UserPrincipal requester) {
+        Course course = courseRepository.findById(request.getCourseId()).orElseThrow(() -> new RuntimeException("Course not found"));
 
         if (!requester.getId().equals(course.getTeacherId())) {
             throw new RuntimeException("You are not allowed to update this course");
@@ -82,11 +88,11 @@ public class CourseServiceImpl implements CourseService {
         updatedCourse.setId(course.getId());
         log.info("Update course: {}", updatedCourse);
 
-        courseRepository.updateCourse(updatedCourse, request);
-
-        if (!CollectionUtils.isEmpty(request.getSections())) {
-            sectionService.updateListByCourseId(updatedCourse.getId(), updatedCourse.getSections());
-        }
+        courseRepository.updateCourseSelective(updatedCourse, request);
+//
+//        if (!CollectionUtils.isEmpty(request.getSections())) {
+//            sectionService.updateListByCourseId(updatedCourse.getId(), updatedCourse.getSections());
+//        }
 
         if (!CollectionUtils.isEmpty(updatedCourse.getCourseInfos())) {
             courseInfoService.updateListByCourseId(updatedCourse.getId(), updatedCourse.getCourseInfos());
@@ -97,20 +103,20 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public Course getCourseBasic(String id, UserPrincipal requester) {
+    public Course getCourseBasic(UUID id, UserPrincipal requester) {
         return courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found"));
     }
 
     @Override
-    public Course getCourseDetail(String id, UserPrincipal requester) {
+    public Course getCourseDetail(UUID id, UserPrincipal requester) {
         Course course = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found"));
 
-        List<Section> sections = sectionService.getByCourseId(UUID.fromString(id));
+        List<Section> sections = sectionService.getByCourseId(id);
 
         if (!CollectionUtils.isEmpty(sections)) {
             course.setSections(sections);
             sections.forEach(section -> {
-                section.setLessons(lessonRepository.findLessonsBySectionId(section.getId()));
+                section.setLessons(lessonRepository.findBySectionId(section.getId()));
             });
         }
 
@@ -157,7 +163,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void addStudents(String courseId, AddStudentToCourseRequest request, UserPrincipal requester) {
+    public void addStudents(UUID courseId, AddStudentToCourseRequest request, UserPrincipal requester) {
         checkCourseAdminPermission(courseId, requester);
 
         List<User> students = userRepository.getByUserIdList(request.getStudentIds());
@@ -182,7 +188,7 @@ public class CourseServiceImpl implements CourseService {
         students.forEach(student -> {
             UserEnrollCourse registration = new UserEnrollCourse();
             registration.setId(UUID.randomUUID());
-            registration.setCourseId(UUID.fromString(courseId));
+            registration.setCourseId(courseId);
             registration.setUserId(student.getId());
             registration.setEnrollStatus(EnrollStatus.PENDING.toString());
             registrations.add(registration);
@@ -191,7 +197,7 @@ public class CourseServiceImpl implements CourseService {
         userEnrollCourseRepository.saveBatch(registrations);
     }
 
-    private void checkCourseAdminPermission(String courseId, UserPrincipal requester) {
+    private void checkCourseAdminPermission(UUID courseId, UserPrincipal requester) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
 
         if (!course.getTeacherId().equals(requester.getId())) {
@@ -200,11 +206,11 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public UserEnrollCourse updateStudentStatus(String courseId, String studentId, UpdateCourseStudent request, UserPrincipal requester) {
+    public UserEnrollCourse updateStudentStatus(UUID courseId, UUID studentId, UpdateCourseStudent request, UserPrincipal requester) {
         checkCourseAdminPermission(courseId, requester);
 
         UserEnrollCourse registration = userEnrollCourseRepository
-                .findByCourseIdAndUserId(UUID.fromString(courseId), UUID.fromString(studentId))
+                .findByCourseIdAndUserId(courseId, studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
         if (registration.getDeletedAt() != null) {
@@ -222,11 +228,11 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public UserEnrollCourse removeStudent(String courseId, String studentId, UserPrincipal requester) {
+    public UserEnrollCourse removeStudent(UUID courseId, UUID studentId, UserPrincipal requester) {
         checkCourseAdminPermission(courseId, requester);
 
         UserEnrollCourse registration = userEnrollCourseRepository
-                .findByCourseIdAndUserId(UUID.fromString(courseId), UUID.fromString(studentId))
+                .findByCourseIdAndUserId(courseId, studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
         if (registration.getDeletedAt() != null) {
@@ -240,10 +246,10 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<UserEnrollCourse> getStudents(String courseId, UserPrincipal requester) {
+    public List<UserEnrollCourse> getStudents(UUID courseId, UserPrincipal requester) {
         checkCourseAdminPermission(courseId, requester);
 
-        List<UserEnrollCourse> students = userEnrollCourseRepository.findByCourseId(UUID.fromString(courseId));
+        List<UserEnrollCourse> students = userEnrollCourseRepository.findByCourseId(courseId);
         students.forEach(student -> {
             student.setStudent(userRepository.getUserById(student.getUserId().toString()).orElse(null));
         });

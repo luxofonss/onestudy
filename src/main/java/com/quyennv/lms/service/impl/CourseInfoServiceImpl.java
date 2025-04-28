@@ -25,7 +25,10 @@ public class CourseInfoServiceImpl implements CourseInfoService {
         List<CourseInfo> newCourseInfos = courseInfos.stream().filter(item -> item.getId() == null).toList();
         List<CourseInfo> updatedCourseInfos = courseInfos.stream().filter(item -> item.getId() != null).toList();
 
-        courseInfoRepository.deleteNotInIds(updatedCourseInfos.stream().map(CourseInfo::getId).collect(Collectors.toList()));
+        courseInfoRepository.deleteNotInIds(
+                updatedCourseInfos.stream().map(CourseInfo::getId).collect(Collectors.toList()),
+                courseId
+        );
 
         if (!CollectionUtils.isEmpty(newCourseInfos)) {
             newCourseInfos.forEach(courseInfo -> {
@@ -45,7 +48,7 @@ public class CourseInfoServiceImpl implements CourseInfoService {
     }
 
     @Override
-    public List<CourseInfo> getByCourseId(String courseId) {
+    public List<CourseInfo> getByCourseId(UUID courseId) {
         List<CourseInfo> courseInfos = courseInfoRepository.findByCourseId(courseId);
         if (CollectionUtils.isEmpty(courseInfos)) {
             return List.of();

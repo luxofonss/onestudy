@@ -21,4 +21,6 @@ public interface AssignmentMapper {
     int updateByPrimaryKey(Assignment record);
 
     void softDeleteByLessonId(UUID id);
+
+    Assignment selectByLessonId(UUID lessonId);
 }

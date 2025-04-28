@@ -1,35 +1,36 @@
 package com.quyennv.lms.dto.assignment;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.quyennv.lms.annotations.ValueOfEnum;
 import com.quyennv.lms.constant.enums.QuestionLevel;
 import com.quyennv.lms.constant.enums.QuestionType;
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class CreateQuestionRequest {
+public class QuestionMutationRequest {
 
     UUID assignmentId;
 
     String title;
 
-    String questionId;
+    UUID questionId;
 
     String description;
 
-    String imageResourceId;
+    UUID imageResourceId;
 
-    String audioResourceId;
+    String imageUrl;
+
+    UUID audioResourceId;
+
+    String audioUrl;
 
     Integer audioMaxPlayTime;
 
@@ -41,7 +42,7 @@ public class CreateQuestionRequest {
     @ValueOfEnum(enumClass = QuestionType.class)
     String type;
 
-    String answerExplain;
+    String v;
 
     List<QuestionChoice> choices;
 
@@ -50,8 +51,10 @@ public class CreateQuestionRequest {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class QuestionChoice {
+
+        UUID questionChoiceId;
+
         @NotBlank
         String content;
 
@@ -66,10 +69,11 @@ public class CreateQuestionRequest {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class QuestionTextAnswer {
 
-        String answer;
+        UUID id;
+
+        String correctTextAnswer;
 
         String explanation;
 

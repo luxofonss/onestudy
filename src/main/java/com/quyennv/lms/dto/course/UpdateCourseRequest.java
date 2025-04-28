@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.quyennv.lms.annotations.ValueOfEnum;
-import com.quyennv.lms.constant.enums.CourseInfoType;
 import com.quyennv.lms.constant.enums.LessonType;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,14 +14,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UpdateCourseRequest {
+
+    UUID courseId;
 
     String name;
 
     String description;
 
-    String backgroundImg;
+    String backgroundImage;
 
     String thumbnail;
 
@@ -47,7 +47,6 @@ public class UpdateCourseRequest {
     List<UpdateCourseRequestSection> sections;
 
     @Data
-    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class UpdateCourseRequestCourseInfo {
         UUID id;
 
@@ -58,7 +57,6 @@ public class UpdateCourseRequest {
     }
 
     @Data
-    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class UpdateCourseRequestSection {
         UUID id;
 
@@ -71,7 +69,6 @@ public class UpdateCourseRequest {
     }
 
     @Data
-    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class UpdateCourseRequestSectionLesson {
         UUID id;
 

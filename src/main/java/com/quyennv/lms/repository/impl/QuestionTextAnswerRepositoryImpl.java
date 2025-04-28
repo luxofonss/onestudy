@@ -38,7 +38,7 @@ public class QuestionTextAnswerRepositoryImpl implements QuestionTextAnswerRepos
     }
 
     @Override
-    public int delete(String id) {
+    public int delete(UUID id) {
         return questionTextAnswerMapper.deleteByPrimaryKey(id);
     }
 

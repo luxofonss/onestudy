@@ -9,8 +9,6 @@ import java.util.List;
 @Mapper
 public interface LessonMapper {
 
-    int softDeleteByPrimaryKey(Object id);
-
     int insert(Lesson record);
 
     void insertBatch(List<Lesson> lessons);
@@ -24,5 +22,7 @@ public interface LessonMapper {
     int updateByPrimaryKeySelective(Lesson record);
 
     int updateByPrimaryKey(Lesson record);
+
+    int softDeleteByPrimaryKey(Object id);
 
 }

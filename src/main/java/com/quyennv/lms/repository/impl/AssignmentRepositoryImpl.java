@@ -36,4 +36,9 @@ public class AssignmentRepositoryImpl implements AssignmentRepository {
     public void softDeleteByLessonId(UUID lessonId) {
         assignmentMapper.softDeleteByLessonId(lessonId);
     }
+
+    @Override
+    public Assignment findByLessonId(UUID lessonId) {
+        return assignmentMapper.selectByLessonId(lessonId);
+    }
 }

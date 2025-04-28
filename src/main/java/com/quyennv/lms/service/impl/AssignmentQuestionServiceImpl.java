@@ -1,8 +1,7 @@
 package com.quyennv.lms.service.impl;
 
-import com.quyennv.lms.dto.assignment.CreateAssignmentResponse;
-import com.quyennv.lms.dto.assignment.CreateQuestionRequest;
-import com.quyennv.lms.dto.assignment.UpdateQuestionRequest;
+import com.quyennv.lms.dto.assignment.DeleteQuestionRequest;
+import com.quyennv.lms.dto.assignment.QuestionMutationRequest;
 import com.quyennv.lms.dto.mappers.QuestionDtoMapper;
 import com.quyennv.lms.entities.Assignment;
 import com.quyennv.lms.entities.Question;
@@ -17,7 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class AssignmentQuestionServiceImpl implements AssignmentQuestionService {
@@ -46,7 +48,7 @@ public class AssignmentQuestionServiceImpl implements AssignmentQuestionService 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void addQuestion(CreateQuestionRequest request, UserPrincipal requester) {
+    public Question addQuestion(QuestionMutationRequest request, UserPrincipal requester) {
 
         Assignment assignment = assignmentService.checkAssignmentPermission(request.getAssignmentId(), requester);
 
@@ -55,21 +57,29 @@ public class AssignmentQuestionServiceImpl implements AssignmentQuestionService 
 
         questionRepository.save(question);
 
-        if (CollectionUtils.isEmpty(question.getChoices())) {
+        if (!CollectionUtils.isEmpty(question.getChoices())) {
+            question.getChoices().forEach(choice -> {
+                choice.setQuestionId(question.getId());
+            });
             questionChoiceRepository.insertBatch(question.getChoices());
         }
 
-        if (CollectionUtils.isEmpty(question.getTextAnswers())) {
+        if (!CollectionUtils.isEmpty(question.getTextAnswers())) {
+            question.getTextAnswers().forEach(textAnswer -> {
+                textAnswer.setQuestionId(question.getId());
+            });
             questionTextAnswerRepository.insertBatch(question.getTextAnswers());
         }
 
+        return question;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateQuestion(UpdateQuestionRequest request, UserPrincipal requester) {
-        assignmentService.checkAssignmentPermission(request.getAssignmentId(), requester);
-
+    public Question updateQuestion(QuestionMutationRequest request, UserPrincipal requester, boolean isInternal) {
+        if (!isInternal) {
+            assignmentService.checkAssignmentPermission(request.getAssignmentId(), requester);
+        }
         Question updateData = questionDtoMapper.toQuestion(request);
 
         updateData.setId(request.getQuestionId());
@@ -122,10 +132,18 @@ public class AssignmentQuestionServiceImpl implements AssignmentQuestionService 
         if (textAnswers != null && !textAnswers.isEmpty()) {
             textAnswers.forEach(textAnswer -> {
                 if (updateData.getTextAnswers().stream().noneMatch(t -> textAnswer.getId().equals(t.getId()))) {
-                    questionTextAnswerRepository.delete(textAnswer.getId().toString());
+                    questionTextAnswerRepository.delete(textAnswer.getId());
                 }
             });
         }
 
+        return updateData;
+
+    }
+
+    @Override
+    public void deleteQuestion(DeleteQuestionRequest request) {
+        // check permission
+        questionRepository.softDelete(request.getQuestionId());
     }
 }

@@ -39,7 +39,6 @@ public class AuthRegisterRequest {
     @ValueOfEnum(enumClass = Gender.class, message = "Gender is not valid")
     String gender;
 
-    @NotBlank(message = "Date of birth is required")
     String dateOfBirth;
 
     String avatar;

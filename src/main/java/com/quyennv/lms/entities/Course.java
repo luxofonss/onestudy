@@ -1,5 +1,6 @@
 package com.quyennv.lms.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -21,6 +22,7 @@ public class Course {
 
     private String description;
 
+    @JsonProperty("backgroundImage")
     private String backgroundImg;
 
     private String thumbnail;

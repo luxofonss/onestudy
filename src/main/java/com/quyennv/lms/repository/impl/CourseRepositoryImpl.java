@@ -38,21 +38,19 @@ public class CourseRepositoryImpl implements CourseRepository {
     public int persist(Course course) {
         course.setId(UUID.randomUUID());
         courseMapper.insert(course);
-
-        if (!CollectionUtils.isEmpty(course.getCourseInfos())) {
-            course.getCourseInfos().forEach(courseInfo -> {
-                courseInfo.setCourseId(course.getId());
-                courseInfo.setId(UUID.randomUUID());
-            });
-            courseInfoMapper.insertBatch(course.getCourseInfos());
-        }
-
         return 1;
 
     }
 
     @Override
     public void updateCourse(Course updatedCourse, UpdateCourseRequest request) {
+        updatedCourse.setUpdatedAt(new Date());
+        courseMapper.updateByPrimaryKey(updatedCourse);
+    }
+
+
+    @Override
+    public void updateCourseSelective(Course updatedCourse, UpdateCourseRequest request) {
         updatedCourse.setUpdatedAt(new Date());
         courseMapper.updateByPrimaryKeySelective(updatedCourse);
     }
@@ -73,7 +71,7 @@ public class CourseRepositoryImpl implements CourseRepository {
     }
 
     @Override
-    public Optional<Course> findById(String id) {
+    public Optional<Course> findById(UUID id) {
         return Optional.ofNullable(courseMapper.selectByPrimaryKey(id));
     }
 

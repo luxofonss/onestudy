@@ -42,6 +42,14 @@ public class AssignmentController {
         return baseService.ofSucceeded(assignmentService.getAssignment(UUID.fromString(id), requester));
     }
 
+    @GetMapping("/filter")
+    @LogsActivityAnnotation
+    public BaseResponse<Assignment> getAssignmentByLesson(
+            @CurrentUser UserPrincipal requester,
+            @RequestParam String lessonId) {
+        return baseService.ofSucceeded(assignmentService.getAssignmentByLesson(UUID.fromString(lessonId), requester));
+    }
+
     @PutMapping("/{id}")
     public BaseResponse<CreateAssignmentResponse> update(
             @CurrentUser UserPrincipal requester,

@@ -6,4 +6,6 @@ public final class Constant {
 
     public static final Integer SIGNED_URL_EXPIRATION = 60 * 1000;
 
+    public static final String STORAGE_AWS = "AWS_S3_NORMAL";
+
 }

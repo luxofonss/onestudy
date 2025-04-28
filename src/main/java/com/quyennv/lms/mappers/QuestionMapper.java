@@ -11,13 +11,15 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface QuestionMapper {
 
-    int deleteByPrimaryKey(Object id);
+    int deleteByPrimaryKey(UUID id);
+
+    int softDeleteByPrimaryKey(UUID id);
 
     int insert(Question record);
 
     int insertSelective(Question record);
 
-    Question selectByPrimaryKey(Object id);
+    Question selectByPrimaryKey(UUID id);
 
     int updateByPrimaryKeySelective(Question record);
 

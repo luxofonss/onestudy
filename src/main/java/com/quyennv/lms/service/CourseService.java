@@ -6,16 +6,17 @@ import com.quyennv.lms.entities.UserEnrollCourse;
 import com.quyennv.lms.security.UserPrincipal;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface CourseService {
 
     CreateCourseResponse create(CreateCourseRequest request, UserPrincipal requester);
 
-    CreateCourseResponse update(String id, UpdateCourseRequest request, UserPrincipal requester);
+    CreateCourseResponse update(UpdateCourseRequest request, UserPrincipal requester);
 
-    Course getCourseBasic(String id, UserPrincipal requester);
+    Course getCourseBasic(UUID id, UserPrincipal requester);
 
-    Course getCourseDetail(String id, UserPrincipal requester);
+    Course getCourseDetail(UUID id, UserPrincipal requester);
 
     List<Course> getPublicCourses(UserPrincipal requester);
 
@@ -23,13 +24,13 @@ public interface CourseService {
 
     UserEnrollCourse registerCourse(RegisterCourseRequest request, UserPrincipal requester);
 
-    void addStudents(String id, AddStudentToCourseRequest request, UserPrincipal requester);
+    void addStudents(UUID id, AddStudentToCourseRequest request, UserPrincipal requester);
 
-    UserEnrollCourse updateStudentStatus(String courseId, String studentId, UpdateCourseStudent request, UserPrincipal requester);
+    UserEnrollCourse updateStudentStatus(UUID courseId, UUID studentId, UpdateCourseStudent request, UserPrincipal requester);
 
-    UserEnrollCourse removeStudent(String courseId, String studentId, UserPrincipal requester);
+    UserEnrollCourse removeStudent(UUID courseId, UUID studentId, UserPrincipal requester);
 
-    List<UserEnrollCourse> getStudents(String courseId, UserPrincipal requester);
+    List<UserEnrollCourse> getStudents(UUID courseId, UserPrincipal requester);
 
     List<Course> getMyRegisteredCourses(UserPrincipal requester);
 }

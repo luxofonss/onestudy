@@ -87,13 +87,15 @@
     delete from public.course_info
     where id = #{id,jdbcType=OTHER}
   </delete>
-  <delete id="deleteCourseIdNotIn" parameterType="UUID">
+  <delete id="deleteCourseIdNotIn" parameterType="map">
     DELETE FROM public.course_info
-    WHERE id NOT IN (
-      <foreach collection="list" item="item" separator=",">
+    WHERE course_id = #{courseId,jdbcType=OTHER}
+    <if test="ids != null and ids.size() > 0">
+      AND id NOT IN
+      <foreach collection="ids" item="item" open="(" separator="," close=")">
         #{item}
       </foreach>
-    )
+    </if>
   </delete>
   <insert id="insert" parameterType="com.quyennv.lms.entities.CourseInfo">
     insert into public.course_info (id, course_id, content, 

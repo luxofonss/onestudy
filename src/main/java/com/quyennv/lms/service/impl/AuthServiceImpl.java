@@ -18,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
 public class AuthServiceImpl implements AuthService {
@@ -46,7 +48,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthRegisterResponse register(AuthRegisterRequest request) {
-        User user = userRepository.getByUsername(request.getUsername()).orElseThrow(() ->  new RuntimeException("user exists"));
+        Optional<User> user = userRepository.getByUsername(request.getUsername());
+        if (user.isPresent()) {
+            throw new RuntimeException("Username already exists");
+        }
 
         User userData = userDtoMapper.authRegisterRequestToUser(request);
         Auth auth = Auth

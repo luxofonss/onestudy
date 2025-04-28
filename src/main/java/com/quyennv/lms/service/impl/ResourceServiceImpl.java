@@ -5,6 +5,7 @@ import com.quyennv.lms.entities.Resource;
 import com.quyennv.lms.repository.ResourceRepository;
 import com.quyennv.lms.security.UserPrincipal;
 import com.quyennv.lms.service.ResourceService;
+import com.quyennv.lms.thirdparty.storage.StorageFactory;
 import com.quyennv.lms.thirdparty.storage.StorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,23 +18,23 @@ import java.util.UUID;
 @Slf4j
 public class ResourceServiceImpl implements ResourceService {
 
-    private final StorageService storageService;
-
     private final ResourceRepository resourceRepository;
 
-    public ResourceServiceImpl(StorageService storageService, ResourceRepository resourceRepository) {
-        this.storageService = storageService;
+    private final StorageService storageService;
+
+    public ResourceServiceImpl(StorageFactory storageFactory, ResourceRepository resourceRepository) {
         this.resourceRepository = resourceRepository;
+        this.storageService = storageFactory.getStorageService("AWS_S3_NORMAL");
     }
 
     @Override
     public Resource uploadResource(MultipartFile file, UserPrincipal requester) {
 
-        String s3FileName = storageService.uploadFile(file);
+        String url = storageService.uploadFile(file);
 
         Resource resource = Resource.builder()
                 .title(file.getOriginalFilename())
-                .url(s3FileName)
+                .url(url)
                 .ownerId(requester.getId())
                 .build();
         resourceRepository.save(resource);
@@ -53,7 +54,7 @@ public class ResourceServiceImpl implements ResourceService {
                 throw new RuntimeException("You are not allowed to access this resource");
             }
 
-            String url = storageService.generateUrl(resource.getUrl());
+            String url = storageService.getFileUrl(resource.getUrl());
 
             return GetResourceResponse.builder()
                     .name(resource.getTitle())

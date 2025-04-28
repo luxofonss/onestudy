@@ -7,9 +7,13 @@ import com.quyennv.lms.constant.enums.LessonType;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import java.util.UUID;
 
 @Data
-public class CreateLessonRequest {
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public class UpdateLessonRequest {
+
+    UUID id;
 
     @NotBlank
     String name;
@@ -19,11 +23,11 @@ public class CreateLessonRequest {
     @ValueOfEnum(enumClass = LessonType.class)
     String type;
 
-    String resourceId;
+    UUID resourceId;
 
-    String sectionId;
+    UUID sectionId;
 
-    String courseId;
+    UUID courseId;
 
     String videoUrl;
 

@@ -18,17 +18,13 @@ public class CourseInfoRepositoryImpl implements CourseInfoRepository {
     }
 
     @Override
-    public List<CourseInfo> findByCourseId(String courseId) {
+    public List<CourseInfo> findByCourseId(UUID courseId) {
         return courseInfoMapper.selectByCourseId(courseId);
     }
 
     @Override
-    public void deleteNotInIds(List<UUID> ids) {
-        if (ids == null || ids.isEmpty()) {
-            return;
-        }
-
-        courseInfoMapper.deleteCourseIdNotIn(ids);
+    public void deleteNotInIds(List<UUID> ids, UUID courseId) {
+        courseInfoMapper.deleteCourseIdNotIn(ids, courseId);
     }
 
     @Override

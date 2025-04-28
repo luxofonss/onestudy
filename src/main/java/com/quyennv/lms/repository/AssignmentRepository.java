@@ -13,4 +13,6 @@ public interface AssignmentRepository {
     int updateSelective(Assignment assignment);
 
     void softDeleteByLessonId(UUID lessonId);
+
+    Assignment findByLessonId(UUID uuid);
 }
